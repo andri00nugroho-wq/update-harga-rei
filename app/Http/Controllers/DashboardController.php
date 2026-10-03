@@ -58,7 +58,6 @@ class DashboardController extends Controller
         return view('dashboard', [
             'sheets' => $sheets,
 
-            // Tetap dikirim agar dashboard lama tidak langsung error
             'prices' => $sheets['jawa']['prices'],
 
             'error' => $sheets['jawa']['error'],

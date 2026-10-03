@@ -1,3 +1,4 @@
+
 @extends('layouts.app')
 
 @section('title', 'Dashboard — Gold Price REI')
@@ -8,14 +9,15 @@
 
 <div class="dashboard-page">
 
-    {{-- =========================================================
-         HEADER
-    ========================================================== --}}
     <div class="page-header">
         <div>
             <span class="eyebrow">RAJA EMAS INDONESIA</span>
+
             <h1>Dashboard</h1>
-            <p>Monitoring harga emas dan sinkronisasi Canva.</p>
+
+            <p>
+                Monitoring harga emas dan sinkronisasi Canva.
+            </p>
         </div>
 
         <div class="header-status">
@@ -24,17 +26,16 @@
         </div>
     </div>
 
-
-    {{-- =========================================================
-         FLASH MESSAGE
-    ========================================================== --}}
     @if (session('canva_success'))
         <div class="alert alert-success">
             <div class="alert-icon">✓</div>
 
             <div class="alert-content">
                 <strong>Sinkronisasi Berhasil</strong>
-                <span>{{ session('canva_success') }}</span>
+
+                <span>
+                    {{ session('canva_success') }}
+                </span>
             </div>
         </div>
     @endif
@@ -45,18 +46,16 @@
 
             <div class="alert-content">
                 <strong>Sinkronisasi Gagal</strong>
-                <span>{{ session('canva_error') }}</span>
+
+                <span>
+                    {{ session('canva_error') }}
+                </span>
             </div>
         </div>
     @endif
 
-
-    {{-- =========================================================
-         SUMMARY
-    ========================================================== --}}
     <div class="stats-grid">
 
-        {{-- DATA SOURCE --}}
         <div class="stat-card">
             <div class="stat-icon">G</div>
 
@@ -67,20 +66,20 @@
             </div>
         </div>
 
-
-        {{-- TOTAL DATA --}}
         <div class="stat-card">
             <div class="stat-icon">#</div>
 
             <div>
                 <span>TOTAL DATA</span>
-                <strong>{{ $totalRows ?? 0 }}</strong>
+
+                <strong>
+                    {{ $totalRows ?? 0 }}
+                </strong>
+
                 <small>Data harga</small>
             </div>
         </div>
 
-
-        {{-- TARGET --}}
         <div class="stat-card">
             <div class="stat-icon">C</div>
 
@@ -91,8 +90,6 @@
             </div>
         </div>
 
-
-        {{-- DESIGN --}}
         <div class="stat-card">
             <div class="stat-icon">✓</div>
 
@@ -109,25 +106,17 @@
 
     </div>
 
-
-    {{-- =========================================================
-         MAIN GRID
-    ========================================================== --}}
     <div class="dashboard-grid">
 
-        {{-- =====================================================
-             LEFT CONTENT
-        ====================================================== --}}
         <main>
 
-            {{-- =================================================
-                 GOOGLE SHEETS
-            ================================================== --}}
             <section class="card" id="automation">
 
                 <div class="card-header">
                     <div>
-                        <span class="section-label">GOOGLE SHEETS</span>
+                        <span class="section-label">
+                            GOOGLE SHEETS
+                        </span>
 
                         <h2>Data Harga</h2>
 
@@ -137,12 +126,10 @@
                     </div>
                 </div>
 
-
                 <div class="card-body">
 
                     <div class="source-grid">
 
-                        {{-- JAWA --}}
                         <a
                             href="{{ route('prices.jawa') }}"
                             class="source-card"
@@ -160,11 +147,11 @@
                                 </span>
                             </div>
 
-                            <span class="source-arrow">→</span>
+                            <span class="source-arrow">
+                                →
+                            </span>
                         </a>
 
-
-                        {{-- KALIMANTAN --}}
                         <a
                             href="{{ route('prices.kalimantan') }}"
                             class="source-card"
@@ -174,7 +161,9 @@
                             </div>
 
                             <div class="source-card-info">
-                                <strong>Kalimantan / Sulawesi</strong>
+                                <strong>
+                                    Kalimantan / Sulawesi
+                                </strong>
 
                                 <span>
                                     {{ count($sheets['kalimantan']['prices'] ?? []) }}
@@ -182,11 +171,11 @@
                                 </span>
                             </div>
 
-                            <span class="source-arrow">→</span>
+                            <span class="source-arrow">
+                                →
+                            </span>
                         </a>
 
-
-                        {{-- SUMATERA --}}
                         <a
                             href="{{ route('prices.sumatera') }}"
                             class="source-card"
@@ -196,7 +185,9 @@
                             </div>
 
                             <div class="source-card-info">
-                                <strong>Sumatera / Bali / Lombok</strong>
+                                <strong>
+                                    Sumatera / Bali / Lombok
+                                </strong>
 
                                 <span>
                                     {{ count($sheets['sumatera']['prices'] ?? []) }}
@@ -204,11 +195,11 @@
                                 </span>
                             </div>
 
-                            <span class="source-arrow">→</span>
+                            <span class="source-arrow">
+                                →
+                            </span>
                         </a>
 
-
-                        {{-- LOGAM MULIA --}}
                         <a
                             href="{{ route('prices.logam-mulia') }}"
                             class="source-card"
@@ -218,7 +209,9 @@
                             </div>
 
                             <div class="source-card-info">
-                                <strong>Logam Mulia</strong>
+                                <strong>
+                                    Logam Mulia
+                                </strong>
 
                                 <span>
                                     {{ count($sheets['logam_mulia']['prices'] ?? []) }}
@@ -226,7 +219,9 @@
                                 </span>
                             </div>
 
-                            <span class="source-arrow">→</span>
+                            <span class="source-arrow">
+                                →
+                            </span>
                         </a>
 
                     </div>
@@ -235,15 +230,13 @@
 
             </section>
 
-
-            {{-- =================================================
-                 AUTOMATION FLOW
-            ================================================== --}}
             <section class="card">
 
                 <div class="card-header">
                     <div>
-                        <span class="section-label">AUTOMATION</span>
+                        <span class="section-label">
+                            AUTOMATION
+                        </span>
 
                         <h2>Alur Sinkronisasi</h2>
 
@@ -253,14 +246,14 @@
                     </div>
                 </div>
 
-
                 <div class="card-body">
 
                     <div class="process-flow">
 
-                        {{-- STEP 01 --}}
                         <div class="process-step">
-                            <div class="process-number">01</div>
+                            <div class="process-number">
+                                01
+                            </div>
 
                             <div>
                                 <strong>Google Sheets</strong>
@@ -268,13 +261,12 @@
                             </div>
                         </div>
 
-
                         <div class="process-line"></div>
 
-
-                        {{-- STEP 02 --}}
                         <div class="process-step">
-                            <div class="process-number">02</div>
+                            <div class="process-number">
+                                02
+                            </div>
 
                             <div>
                                 <strong>Laravel</strong>
@@ -282,13 +274,12 @@
                             </div>
                         </div>
 
-
                         <div class="process-line"></div>
 
-
-                        {{-- STEP 03 --}}
                         <div class="process-step">
-                            <div class="process-number">03</div>
+                            <div class="process-number">
+                                03
+                            </div>
 
                             <div>
                                 <strong>Canva API</strong>
@@ -296,13 +287,12 @@
                             </div>
                         </div>
 
-
                         <div class="process-line"></div>
 
-
-                        {{-- STEP 04 --}}
                         <div class="process-step">
-                            <div class="process-number">04</div>
+                            <div class="process-number">
+                                04
+                            </div>
 
                             <div>
                                 <strong>Result</strong>
@@ -318,27 +308,23 @@
 
         </main>
 
-
-        {{-- =====================================================
-             RIGHT SIDEBAR
-        ====================================================== --}}
         <aside class="sidebar">
 
-            {{-- =================================================
-                 CANVA CONNECTION
-            ================================================== --}}
             <section class="card">
 
                 <div class="card-header">
                     <div>
-                        <span class="section-label">CANVA</span>
+                        <span class="section-label">
+                            CANVA
+                        </span>
 
                         <h2>Connection</h2>
 
-                        <p>Status koneksi Canva.</p>
+                        <p>
+                            Status koneksi Canva.
+                        </p>
                     </div>
                 </div>
-
 
                 <div class="card-body">
 
@@ -359,7 +345,6 @@
 
                     </div>
 
-
                     <a
                         href="{{ route('canva.connect') }}"
                         class="button button-secondary"
@@ -371,15 +356,13 @@
 
             </section>
 
-
-            {{-- =================================================
-                 UPDATE CANVA
-            ================================================== --}}
             <section class="card">
 
                 <div class="card-header">
                     <div>
-                        <span class="section-label">ACTION</span>
+                        <span class="section-label">
+                            ACTION
+                        </span>
 
                         <h2>Update Harga</h2>
 
@@ -389,12 +372,10 @@
                     </div>
                 </div>
 
-
                 <div class="card-body">
 
                     <div class="info-list">
 
-                        {{-- TOTAL DATA --}}
                         <div class="info-row">
                             <span>Total data</span>
 
@@ -403,8 +384,6 @@
                             </strong>
                         </div>
 
-
-                        {{-- TARGET DESIGN --}}
                         <div class="info-row">
                             <span>Target design</span>
 
@@ -413,8 +392,6 @@
                             </strong>
                         </div>
 
-
-                        {{-- SOURCE --}}
                         <div class="info-row">
                             <span>Source</span>
 
@@ -424,7 +401,6 @@
                         </div>
 
                     </div>
-
 
                     <form
                         id="syncForm"
@@ -448,28 +424,26 @@
 
             </section>
 
-
-            {{-- =================================================
-                 LAST SYNC
-            ================================================== --}}
             @if (isset($latestSync))
 
                 <section class="card status-card">
 
                     <div class="card-header">
                         <div>
-                            <span class="section-label">LAST SYNC</span>
+                            <span class="section-label">
+                                LAST SYNC
+                            </span>
 
-                            <h2>Sinkronisasi Terakhir</h2>
+                            <h2>
+                                Sinkronisasi Terakhir
+                            </h2>
                         </div>
                     </div>
-
 
                     <div class="card-body">
 
                         <div class="status-list">
 
-                            {{-- STATUS --}}
                             <div class="status-row">
                                 <span>Status</span>
 
@@ -478,8 +452,6 @@
                                 </strong>
                             </div>
 
-
-                            {{-- DATA --}}
                             <div class="status-row">
                                 <span>Data</span>
 
@@ -488,8 +460,6 @@
                                 </strong>
                             </div>
 
-
-                            {{-- JOB ID --}}
                             <div class="status-row">
                                 <span>Job ID</span>
 
@@ -498,8 +468,6 @@
                                 </strong>
                             </div>
 
-
-                            {{-- DESIGN ID --}}
                             <div class="status-row">
                                 <span>Design ID</span>
 
@@ -510,8 +478,6 @@
 
                         </div>
 
-
-                        {{-- RESULT LINK --}}
                         @if (!empty($latestSync->edit_url))
 
                             <div class="result-links">
@@ -540,17 +506,6 @@
     </div>
 
 </div>
-
-
-{{-- =============================================================
-     DASHBOARD SCRIPT
-============================================================== --}}
-@push('scripts')
-    <script
-        src="{{ Vite::asset('resources/js/dashboard.js') }}"
-        defer
-    ></script>
-@endpush
 
 @endsection
 

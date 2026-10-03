@@ -16,7 +16,8 @@ class GoldPriceImageService
             );
         }
 
-        $filename = 'harga-emas-' .
+        $filename =
+            'harga-emas-' .
             now()->format('Ymd-His') .
             '-' .
             Str::random(6) .
@@ -33,9 +34,7 @@ class GoldPriceImageService
 
         return [
             'path' => $relativePath,
-            'url' => Storage::disk('public')->url(
-                $relativePath
-            ),
+            'url' => Storage::disk('public')->url($relativePath),
         ];
     }
 
@@ -62,29 +61,19 @@ class GoldPriceImageService
         $svg .= '<svg xmlns="http://www.w3.org/2000/svg" ';
         $svg .= 'width="' . $width . '" ';
         $svg .= 'height="' . $height . '" ';
-        $svg .= 'viewBox="0 0 ' .
-            $width .
-            ' ' .
-            $height .
-            '">';
+        $svg .= 'viewBox="0 0 ' . $width . ' ' . $height . '">';
 
-        /*
-         * Background
-         */
+        // Background
         $svg .= '<rect width="100%" height="100%" fill="#ffffff"/>';
 
-        /*
-         * Header
-         */
+        // Header
         $svg .= '<rect ';
         $svg .= 'x="0" y="0" ';
         $svg .= 'width="' . $width . '" ';
         $svg .= 'height="' . $headerHeight . '" ';
         $svg .= 'fill="#421A40"/>';
-        
-        /*
-         * Gold line
-         */
+
+        // Gold line
         $svg .= '<rect ';
         $svg .= 'x="0" ';
         $svg .= 'y="' . ($headerHeight - 5) . '" ';
@@ -92,9 +81,7 @@ class GoldPriceImageService
         $svg .= 'height="5" ';
         $svg .= 'fill="#C9A227"/>';
 
-        /*
-         * Title
-         */
+        // Title
         $svg .= $this->text(
             'DAFTAR HARGA KAMI BELI',
             60,
@@ -132,9 +119,7 @@ class GoldPriceImageService
             'end'
         );
 
-        /*
-         * Table header
-         */
+        // Table header
         $svg .= '<rect ';
         $svg .= 'x="40" ';
         $svg .= 'y="' . $tableTop . '" ';
@@ -161,11 +146,8 @@ class GoldPriceImageService
             'end'
         );
 
-        /*
-         * Data rows
-         */
+        // Data rows
         foreach ($prices as $index => $price) {
-
             $y = $dataTop + ($index * $rowHeight);
 
             $karat = trim(
@@ -176,17 +158,11 @@ class GoldPriceImageService
                 (string) ($price['harga/gr'] ?? '')
             );
 
-            /*
-             * Requirement dari desain ujian.
-             */
-            if ($index === 0) {
-                $karat = 'K24 TEST';
-                $harga = 'Rp 2.165.000';
+            if ($karat === '' && $harga === '') {
+                continue;
             }
 
-            /*
-             * Alternating background
-             */
+            // Alternating background
             $background =
                 $index % 2 === 0
                     ? '#F8F5F0'
@@ -199,9 +175,7 @@ class GoldPriceImageService
             $svg .= 'height="' . $rowHeight . '" ';
             $svg .= 'fill="' . $background . '"/>';
 
-            /*
-             * Bottom border
-             */
+            // Bottom border
             $svg .= '<line ';
             $svg .= 'x1="40" ';
             $svg .= 'y1="' . ($y + $rowHeight) . '" ';
@@ -216,7 +190,7 @@ class GoldPriceImageService
                 $y + 35,
                 20,
                 '#421A40',
-                $index === 0 ? '700' : '500'
+                '500'
             );
 
             $svg .= $this->text(
@@ -230,9 +204,7 @@ class GoldPriceImageService
             );
         }
 
-        /*
-         * Footer
-         */
+        // Footer
         $footerTop =
             $dataTop +
             (count($prices) * $rowHeight);

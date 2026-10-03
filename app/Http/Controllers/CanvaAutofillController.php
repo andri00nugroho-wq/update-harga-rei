@@ -26,15 +26,11 @@ class CanvaAutofillController extends Controller
             ], 401);
         }
 
-        /*
-         * Design Canva yang digunakan untuk ujian.
-         */
+       
         $designId = 'DAHWukifqHg';
 
         try {
-            /*
-             * 1. Ambil data Google Sheets
-             */
+          
             $prices = $sheets->getPrices();
 
             if (empty($prices)) {
@@ -43,24 +39,18 @@ class CanvaAutofillController extends Controller
                 );
             }
 
-            /*
-             * 2. Cek dataset Canva
-             */
+           
             $dataset = $canva->getDesignDataset(
                 $token,
                 $designId
             );
 
-            /*
-             * 3. Cari field sheet
-             */
+            
             $sheetField = $canva->findSheetField(
                 $dataset
             );
 
-            /*
-             * Kalau kosong, jangan pura-pura berhasil.
-             */
+          
             if (!$sheetField) {
                 return response()->json([
                     'success' => false,
@@ -73,9 +63,7 @@ class CanvaAutofillController extends Controller
                 ], 422);
             }
 
-            /*
-             * 4. Buat Autofill Job
-             */
+           
             $job = $canva->createAutofillFromDesign(
                 $token,
                 $designId,
@@ -91,9 +79,7 @@ class CanvaAutofillController extends Controller
                 );
             }
 
-            /*
-             * 5. Polling beberapa kali.
-             */
+          
             $result = null;
 
             for ($i = 0; $i < 10; $i++) {
@@ -127,9 +113,7 @@ class CanvaAutofillController extends Controller
                 ], 500);
             }
 
-            /*
-             * 6. Ambil URL hasil Canva.
-             */
+           
             $design = $result['job']['result']['design'] ?? [];
 
             $editUrl =

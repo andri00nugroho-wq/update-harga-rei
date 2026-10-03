@@ -16,9 +16,7 @@ class CanvaController extends Controller
     ) {
     }
 
-    /**
-     * Redirect user ke halaman OAuth Canva.
-     */
+   
     public function connect(
         Request $request
     ): RedirectResponse {
@@ -62,9 +60,7 @@ class CanvaController extends Controller
         );
     }
 
-    /**
-     * Callback OAuth Canva.
-     */
+  
     public function callback(
         Request $request
     ): RedirectResponse {
@@ -145,9 +141,6 @@ class CanvaController extends Controller
         }
     }
 
-    /**
-     * Cek status koneksi Canva.
-     */
     public function status(
         Request $request
     ): JsonResponse {

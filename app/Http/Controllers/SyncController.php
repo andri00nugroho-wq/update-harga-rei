@@ -17,12 +17,7 @@ class SyncController extends Controller
         CanvaService $canva
     ): JsonResponse {
         try {
-            /*
-            |--------------------------------------------------------------------------
-            | 1. Canva token
-            |--------------------------------------------------------------------------
-            */
-
+            // 1. Canva token
             $token = $request->session()->get('canva_token');
 
             if (empty($token)) {
@@ -43,12 +38,7 @@ class SyncController extends Controller
                 ], 401);
             }
 
-            /*
-            |--------------------------------------------------------------------------
-            | 2. Canva design
-            |--------------------------------------------------------------------------
-            */
-
+            // 2. Canva design
             $designId = config('services.canva.design_id');
 
             if (!$designId) {
@@ -58,12 +48,7 @@ class SyncController extends Controller
                 ], 500);
             }
 
-            /*
-            |--------------------------------------------------------------------------
-            | 3. Ambil dataset Canva
-            |--------------------------------------------------------------------------
-            */
-
+            // 3. Ambil dataset Canva
             $datasetResponse = $canva->getDesignDataset(
                 $accessToken,
                 $designId
@@ -80,24 +65,14 @@ class SyncController extends Controller
 
             $datasetKeys = array_keys($dataset);
 
-            /*
-            |--------------------------------------------------------------------------
-            | 4. Buat index field Canva
-            |--------------------------------------------------------------------------
-            */
-
+            // 4. Buat index field Canva
             $fieldIndex = [];
 
             foreach ($datasetKeys as $field) {
                 $fieldIndex[$this->normalizeField($field)] = $field;
             }
 
-            /*
-            |--------------------------------------------------------------------------
-            | 5. Ambil Google Sheets
-            |--------------------------------------------------------------------------
-            */
-
+            // 5. Ambil data Google Sheets
             $jawa = $googleSheets->getPrices(
                 'Harga Emas Raja Emas - Ujian Fullstack'
             );
@@ -114,12 +89,7 @@ class SyncController extends Controller
                 'Daftar Harga Logam Mulia Raja Emas Indonesia'
             );
 
-            /*
-            |--------------------------------------------------------------------------
-            | 6. Data Autofill
-            |--------------------------------------------------------------------------
-            */
-
+            // 6. Data Autofill
             $autofillData = [];
 
             $mapped = [
@@ -138,12 +108,7 @@ class SyncController extends Controller
                 'kitkat' => [],
             ];
 
-            /*
-            |--------------------------------------------------------------------------
-            | 7. JAWA / NASIONAL
-            |--------------------------------------------------------------------------
-            */
-
+            // 7. Jawa / Nasional
             foreach ($jawa as $row) {
                 $karat = $this->cleanKarat(
                     $row['karat'] ?? ''
@@ -175,12 +140,7 @@ class SyncController extends Controller
                 $mapped['jawa']++;
             }
 
-            /*
-            |--------------------------------------------------------------------------
-            | 8. KALIMANTAN / SULAWESI
-            |--------------------------------------------------------------------------
-            */
-
+            // 8. Kalimantan / Sulawesi
             foreach ($kalimantan as $row) {
                 $karat = $this->cleanKarat(
                     $row['karat'] ?? ''
@@ -213,12 +173,7 @@ class SyncController extends Controller
                 $mapped['kalimantan']++;
             }
 
-            /*
-            |--------------------------------------------------------------------------
-            | 9. SUMATERA / BALI / LOMBOK
-            |--------------------------------------------------------------------------
-            */
-
+            // 9. Sumatera / Bali / Lombok
             foreach ($sumatera as $row) {
                 $karat = $this->cleanKarat(
                     $row['karat'] ?? ''
@@ -251,12 +206,7 @@ class SyncController extends Controller
                 $mapped['sumatera']++;
             }
 
-            /*
-            |--------------------------------------------------------------------------
-            | 10. LOGAM MULIA
-            |--------------------------------------------------------------------------
-            */
-
+            // 10. Logam Mulia
             $inKitkatSection = false;
 
             foreach ($logamMulia as $row) {
@@ -272,15 +222,8 @@ class SyncController extends Controller
                     (string) ($row['buyback'] ?? '')
                 );
 
-                /*
-                |--------------------------------------------------------------------------
-                | Kitkat Gold
-                |--------------------------------------------------------------------------
-                */
-
-                if (
-                    strtolower($gramasi) === 'kitkat gold'
-                ) {
+                // Kitkat Gold
+                if (strtolower($gramasi) === 'kitkat gold') {
                     $inKitkatSection = true;
                     continue;
                 }
@@ -342,15 +285,8 @@ class SyncController extends Controller
                     continue;
                 }
 
-                /*
-                |--------------------------------------------------------------------------
-                | Logam Mulia biasa
-                |--------------------------------------------------------------------------
-                */
-
-                $suffix = $this->normalizeGramasi(
-                    $gramasi
-                );
+                // Logam Mulia biasa
+                $suffix = $this->normalizeGramasi($gramasi);
 
                 if ($suffix === '') {
                     continue;
@@ -370,12 +306,6 @@ class SyncController extends Controller
                     'gramasi_' . $suffix,
                     $fieldIndex
                 );
-
-                /*
-                |--------------------------------------------------------------------------
-                | Kalau field tidak ada, skip
-                |--------------------------------------------------------------------------
-                */
 
                 if (
                     !$hargaField &&
@@ -416,12 +346,7 @@ class SyncController extends Controller
                 $mapped['logam_mulia']++;
             }
 
-            /*
-            |--------------------------------------------------------------------------
-            | 11. Validasi
-            |--------------------------------------------------------------------------
-            */
-
+            // 11. Validasi
             $mappedCount = count($autofillData);
 
             if ($mappedCount === 0) {
@@ -434,12 +359,7 @@ class SyncController extends Controller
                 ], 422);
             }
 
-            /*
-            |--------------------------------------------------------------------------
-            | 12. Canva Autofill
-            |--------------------------------------------------------------------------
-            */
-
+            // 12. Canva Autofill
             $autofill = $canva->createAutofill(
                 $accessToken,
                 $designId,
@@ -459,12 +379,7 @@ class SyncController extends Controller
                 ], 500);
             }
 
-            /*
-            |--------------------------------------------------------------------------
-            | 13. Simpan log
-            |--------------------------------------------------------------------------
-            */
-
+            // 13. Simpan log
             SyncLog::create([
                 'status' => 'processing',
                 'total_data' => $mappedCount,
@@ -473,12 +388,7 @@ class SyncController extends Controller
                 'message' => 'Autofill Canva sedang diproses.',
             ]);
 
-            /*
-            |--------------------------------------------------------------------------
-            | 14. Response
-            |--------------------------------------------------------------------------
-            */
-
+            // 14. Response
             return response()->json([
                 'status' => 'processing',
                 'job_status' => 'in_progress',
@@ -490,7 +400,6 @@ class SyncController extends Controller
                 'skipped' => $skipped,
                 'fields_sent' => array_keys($autofillData),
             ]);
-
         } catch (Throwable $e) {
             return response()->json([
                 'status' => 'failed',
@@ -501,12 +410,7 @@ class SyncController extends Controller
         }
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | STATUS AUTOFILL
-    |--------------------------------------------------------------------------
-    */
-
+    // STATUS AUTOFILL
     public function status(
         Request $request,
         string $jobId,
@@ -551,12 +455,7 @@ class SyncController extends Controller
                 )
             );
 
-            /*
-            |--------------------------------------------------------------------------
-            | Processing
-            |--------------------------------------------------------------------------
-            */
-
+            // Processing
             if (in_array(
                 $rawStatus,
                 [
@@ -583,12 +482,7 @@ class SyncController extends Controller
                 ]);
             }
 
-            /*
-            |--------------------------------------------------------------------------
-            | Success
-            |--------------------------------------------------------------------------
-            */
-
+            // Success
             if (in_array(
                 $rawStatus,
                 [
@@ -646,12 +540,7 @@ class SyncController extends Controller
                 ]);
             }
 
-            /*
-            |--------------------------------------------------------------------------
-            | Failed
-            |--------------------------------------------------------------------------
-            */
-
+            // Failed
             $errorMessage =
                 $job['job']['error']['message']
                 ?? $job['error']['message']
@@ -672,7 +561,6 @@ class SyncController extends Controller
                 'job_id' => $jobId,
                 'design_id' => $log?->design_id,
             ]);
-
         } catch (Throwable $e) {
             return response()->json([
                 'status' => 'failed',
@@ -682,51 +570,25 @@ class SyncController extends Controller
         }
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | FIND JAWA FIELD
-    |--------------------------------------------------------------------------
-    */
-
     private function findJawaField(
         string $karat,
         array $fieldIndex
     ): ?string {
-        $karat = strtoupper(
-            trim($karat)
-        );
+        $karat = strtoupper(trim($karat));
 
-        /*
-        | K24*
-        */
-
-        if (
-            preg_match(
-                '/^K24\s*\*$/i',
-                $karat
-            )
-        ) {
+        if (preg_match('/^K24\s*\*$/i', $karat)) {
             return $this->findField(
                 'harga_k24',
                 $fieldIndex
             );
         }
 
-        /*
-        | K24 (99.5%) / K24 (99,5%)
-        */
-
         if (
             preg_match(
-                '/^K24\s*\(\s*99[.,]5\s*%\s*\)$/i',
+                '/^K24\s*\(99[.,]5\s*%\)$/i',
                 $karat
             )
         ) {
-            /*
-            | Prioritas nama Canva:
-            | harga_k24_99,5
-            */
-
             foreach ([
                 'harga_k24_99,5',
                 'harga_k24_995',
@@ -744,10 +606,6 @@ class SyncController extends Controller
             return null;
         }
 
-        /*
-        | K6 - K23
-        */
-
         if (
             preg_match(
                 '/^K(6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23)$/i',
@@ -764,26 +622,12 @@ class SyncController extends Controller
         return null;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | FIND REGIONAL FIELD
-    |--------------------------------------------------------------------------
-    */
-
     private function findRegionalField(
         string $karat,
         string $prefix,
         array $fieldIndex
     ): ?string {
-        $karat = strtoupper(
-            trim($karat)
-        );
-
-        /*
-        |--------------------------------------------------------------------------
-        | Bersihkan prefix yang kadang ikut terbaca dari Sheets
-        |--------------------------------------------------------------------------
-        */
+        $karat = strtoupper(trim($karat));
 
         $karat = preg_replace(
             '/^(KALIMANTAN_|SUMATERA_|SULAWESI_|BALI_|LOMBOK_)/i',
@@ -791,33 +635,16 @@ class SyncController extends Controller
             $karat
         );
 
-        /*
-        |--------------------------------------------------------------------------
-        | K24*
-        |--------------------------------------------------------------------------
-        */
-
-        if (
-            preg_match(
-                '/^K24\s*\*$/i',
-                $karat
-            )
-        ) {
+        if (preg_match('/^K24\s*\*$/i', $karat)) {
             return $this->findField(
                 $prefix . '24',
                 $fieldIndex
             );
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | K24 (99.5%)
-        |--------------------------------------------------------------------------
-        */
-
         if (
             preg_match(
-                '/^K24\s*\(\s*99[.,]5\s*%\s*\)$/i',
+                '/^K24\s*\(99[.,]5\s*%\)$/i',
                 $karat
             )
         ) {
@@ -838,12 +665,6 @@ class SyncController extends Controller
             return null;
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | K6 - K23
-        |--------------------------------------------------------------------------
-        */
-
         if (
             preg_match(
                 '/^K(6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23)$/i',
@@ -860,41 +681,19 @@ class SyncController extends Controller
         return null;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | FIND FIELD
-    |--------------------------------------------------------------------------
-    */
-
     private function findField(
         string $target,
         array $fieldIndex
     ): ?string {
-        $normalizedTarget = $this->normalizeField(
-            $target
-        );
+        $normalizedTarget = $this->normalizeField($target);
 
         return $fieldIndex[$normalizedTarget]
             ?? null;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | CLEAN KARAT
-    |--------------------------------------------------------------------------
-    */
-
     private function cleanKarat($value): string
     {
-        $value = trim(
-            (string) $value
-        );
-
-        /*
-        |--------------------------------------------------------------------------
-        | Buang prefix wilayah
-        |--------------------------------------------------------------------------
-        */
+        $value = trim((string) $value);
 
         $value = preg_replace(
             '/^(kalimantan|sulawesi|sumatera|bali|lombok)[_\-\s]+/i',
@@ -905,12 +704,6 @@ class SyncController extends Controller
         return trim($value);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | NORMALIZE GRAMASI
-    |--------------------------------------------------------------------------
-    */
-
     private function normalizeGramasi(
         string $value
     ): string {
@@ -920,19 +713,11 @@ class SyncController extends Controller
             return '';
         }
 
-        /*
-        | 0,1 -> 0.1
-        */
-
         $value = str_replace(
             ',',
             '.',
             $value
         );
-
-        /*
-        | Hanya angka dan titik
-        */
 
         $value = preg_replace(
             '/[^0-9.]/',
@@ -944,16 +729,9 @@ class SyncController extends Controller
             return '';
         }
 
-        /*
-        | 0.1 -> 0_1
-        | 1 -> 1
-        */
-
         $number = (float) $value;
 
-        if (
-            floor($number) === $number
-        ) {
+        if (floor($number) === $number) {
             return (string) (int) $number;
         }
 
@@ -975,28 +753,10 @@ class SyncController extends Controller
         );
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | NORMALIZE FIELD
-    |--------------------------------------------------------------------------
-    */
-
     private function normalizeField(
         string $value
     ): string {
-        $value = strtolower(
-            trim($value)
-        );
-
-        /*
-        | Penting:
-        | Jangan hilangkan underscore.
-        | Karena field Canva:
-        |
-        | harga_k24_99,5
-        | harga_0_1
-        | buyback_0_1
-        */
+        $value = strtolower(trim($value));
 
         $value = str_replace(
             [
@@ -1010,11 +770,6 @@ class SyncController extends Controller
             $value
         );
 
-        /*
-        | Koma desimal tetap dianggap sama dengan 995
-        | hanya untuk pencocokan K24 99.5.
-        */
-
         $value = str_replace(
             ',',
             '',
@@ -1024,3 +779,4 @@ class SyncController extends Controller
         return $value;
     }
 }
+
