@@ -39,7 +39,9 @@ return [
 
     'ses' => [
         'key' => env('AWS_ACCESS_KEY_ID'),
+
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
+
         'region' => env(
             'AWS_DEFAULT_REGION',
             'us-east-1'
@@ -71,15 +73,39 @@ return [
     */
 
     'google_sheets' => [
+
+        // Dipertahankan untuk kompatibilitas konfigurasi lama.
         'api_key' => env('GOOGLE_API_KEY'),
 
-        'spreadsheet_id' => env(
-            'GOOGLE_SHEETS_ID'
+        // Kredensial Service Account untuk spreadsheet privat.
+        'credentials' => env('GOOGLE_SERVICE_ACCOUNT_JSON'),
+
+        // Spreadsheet utama: Jawa / Nasional.
+        'spreadsheet_id' => env('GOOGLE_SHEETS_ID'),
+
+        // Spreadsheet regional: Kalimantan dan Sumatera.
+        // Jika tidak diisi, gunakan ID spreadsheet utama.
+        'region_spreadsheet_id' => env(
+            'GOOGLE_SHEETS_REGION_ID',
+            env('GOOGLE_SHEETS_ID')
         ),
 
+        // Spreadsheet khusus Logam Mulia.
+        'logam_mulia_spreadsheet_id' => env(
+            'GOOGLE_SHEETS_LOGAM_MULIA_ID'
+        ),
+
+        // GID tab default.
+        'sheet_gid' => env(
+            'GOOGLE_SHEETS_GID',
+            '0'
+        ),
+
+        // Nama tab default jika dibutuhkan.
         'sheet_name' => env(
             'GOOGLE_SHEETS_SHEET_NAME'
         ),
+
     ],
 
     /*
@@ -89,6 +115,7 @@ return [
     */
 
     'canva' => [
+
         'client_id' => env(
             'CANVA_CLIENT_ID'
         ),
@@ -105,6 +132,7 @@ return [
         'design_id' => env(
             'CANVA_DESIGN_ID'
         ),
+
     ],
 
 ];
